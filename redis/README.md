@@ -1,4 +1,12 @@
-# Redis Docker Compose Setup
+# redis
+
+```powershell
+# alternative of compose
+scoop install redis
+
+# GUI client
+scoop install another-redis-desktop-manager
+```
 
 ## 参考
 

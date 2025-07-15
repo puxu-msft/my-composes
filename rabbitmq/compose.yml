@@ -1,0 +1,20 @@
+services:
+
+  rabbit:
+    # image: rabbitmq:3-management
+    build:
+      context: .
+      dockerfile: ./Containerfile
+    restart: always
+    environment:
+      # - RABBITMQ_DEFAULT_VHOST=/
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=pass
+      - RABBITMQ_PLUGINS_DIR=/plugins
+    ports:
+      - "5672:5672"  # AMQP protocol
+      - "15672:15672"  # Management UI
+    volumes:
+      # - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./data:/var/lib/rabbitmq
+      - ./plugins:/plugins

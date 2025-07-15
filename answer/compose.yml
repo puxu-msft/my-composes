@@ -1,0 +1,58 @@
+services:
+
+  app:
+    image: apache/answer:1.5.1
+    environment:
+      AUTO_INSTALL: 'true'
+      INSTALL_PORT: '8080'
+      DB_TYPE: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db:5432
+      DB_NAME: answer
+      LANGUAGE: zh-CN
+      SITE_NAME: My Answer
+      SITE_URL: http://my-answer:9080
+      CONTACT_EMAIL: a.xp@live.com
+      ADMIN_NAME: xp
+      ADMIN_PASSWORD: 1234qwer
+      ADMIN_EMAIL: a.xp@live.com
+      EXTERNAL_CONTENT_DISPLAY: always_display
+    # 执行用户
+    user: "1000:1000"
+    ports:
+      - '9080:8080'
+    volumes:
+      - ./answer_data:/data
+    depends_on:
+      - db
+    # 健康检查策略：检查失败重启服务
+    restart: on-failure
+
+  db:
+    image: postgres:17.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: answer
+      PGDATA: /var/lib/postgresql/17/docker
+    user: "1000:1000"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata17:/var/lib/postgresql/17/docker
+    restart: always
+    # set shared memory limit
+    shm_size: 128mb
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    # https://www.pgadmin.org/docs/pgadmin4/development/container_deployment.html
+    environment:
+      PGADMIN_DEFAULT_EMAIL: a@b.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DISABLE_POSTFIX: 'True'
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
