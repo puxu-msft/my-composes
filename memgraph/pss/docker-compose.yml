@@ -15,17 +15,16 @@ services:
   mage_p:
     image: memgraph/memgraph-mage:latest
     environment:
-      - MEMGRAPH_MANAGEMENT_PORT=13011
+      # - MEMGRAPH_MANAGEMENT_PORT=13011
       - MEMGRAPH_USER=user
       - MEMGRAPH_PASSWORD=user
     ports:
       - "7687:7687"  # Bolt protocol
-      - "13011:13011"  # Management port
     volumes:
       - ./init_primary.cypherl:/tmp/init/init.cypherl:ro
       - mg_lib1:/var/lib/memgraph
       - mg_log1:/var/log/memgraph
-    command: ["--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
+    command: ["--log-level=TRACE", "--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
     healthcheck:
       test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole || exit 1"]
       interval: 10s
@@ -36,17 +35,16 @@ services:
   mage_s1:
     image: memgraph/memgraph-mage:latest
     environment:
-      - MEMGRAPH_MANAGEMENT_PORT=13011
+      # - MEMGRAPH_MANAGEMENT_PORT=13011
       - MEMGRAPH_USER=user
       - MEMGRAPH_PASSWORD=user
     ports:
       - "7688:7687"  # Bolt protocol
-      - "13012:13011"  # Management port
     volumes:
       - ./init_secondary.cypherl:/tmp/init/init.cypherl:ro
       - mg_lib2:/var/lib/memgraph
       - mg_log2:/var/log/memgraph
-    command: ["--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
+    command: ["--log-level=TRACE", "--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
     healthcheck:
       test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole || exit 1"]
       interval: 10s
@@ -57,17 +55,16 @@ services:
   mage_s2:
     image: memgraph/memgraph-mage:latest
     environment:
-      - MEMGRAPH_MANAGEMENT_PORT=13011
+      # - MEMGRAPH_MANAGEMENT_PORT=13011
       - MEMGRAPH_USER=user
       - MEMGRAPH_PASSWORD=user
     ports:
       - "7689:7687"  # Bolt protocol
-      - "13013:13011"  # Management port
     volumes:
       - ./init_secondary.cypherl:/tmp/init/init.cypherl:ro
       - mg_lib3:/var/lib/memgraph
       - mg_log3:/var/log/memgraph
-    command: ["--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
+    command: ["--log-level=TRACE", "--init-file=/tmp/init/init.cypherl", "--data-recovery-on-startup=true"]
     healthcheck:
       test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole || exit 1"]
       interval: 10s
@@ -80,7 +77,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mage
+      - mage_p
     environment:
       - QUICK_CONNECT_MG_HOST=mage_p
       - QUICK_CONNECT_MG_PORT=7687
