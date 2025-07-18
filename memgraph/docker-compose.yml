@@ -1,0 +1,37 @@
+services:
+
+  # The Memgraph database with included MAGE algorithms
+  mage:
+    image: memgraph/memgraph-mage:latest
+    environment:
+      - MEMGRAPH_USER=user
+      - MEMGRAPH_PASSWORD=user
+    ports:
+      - "7687:7687"  # Bolt protocol
+      - "7444:7444"  # HTTPS
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+    command: ["--log-level=TRACE"]
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 0s
+
+  # A user-friendly visual interface that connects automatically to the Memgraph service using predefined environment variables
+  lab:
+    image: memgraph/lab:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mage
+    environment:
+      - QUICK_CONNECT_MG_HOST=mage
+      - QUICK_CONNECT_MG_PORT=7687
+
+volumes:
+  mg_lib:
+  mg_log:
+  mg_etc:
