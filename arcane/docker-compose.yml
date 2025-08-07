@@ -1,0 +1,26 @@
+services:
+  arcane:
+    image: ghcr.io/ofkm/arcane:latest
+    container_name: arcane
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - arcane-data:/app/data
+      # - /var/run/docker.sock:/var/run/docker.sock
+      - /run/user/1000/podman/podman.sock:/var/run/docker.sock
+    environment:
+      - APP_ENV=production # Required
+      - PUBLIC_SESSION_SECRET=xp # Generate: openssl rand -base64 32
+      # Optional: Match your host user for permissions
+      - PUID=1000
+      - PGID=1000
+      # Optional: Set if Docker access fails, stat -c '%g' /var/run/docker.sock
+      - DOCKER_GID=1001
+      # Optional: For local HTTP testing only
+      - PUBLIC_ALLOW_INSECURE_COOKIES=true
+    userns_mode: "keep-id:uid=1000,gid=1000"
+
+volumes:
+  arcane-data:
+    driver: local

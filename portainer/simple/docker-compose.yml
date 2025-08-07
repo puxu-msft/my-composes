@@ -1,24 +1,21 @@
 
+name: portainer-simple
+
 services:
 
   portainer:
     image: portainer/portainer-ce:latest
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
     environment:
       - TZ=Asia/Shanghai
     ports:
-      # webui
-      - "9000:9000"
+      - "9000:9000"  # webui HTTP
+      # - "9443:9443"  # webui HTTPS
+      # - "9001:9001"  # agent HTTP
+      # - "9444:9444"  # agent HTTPS
     volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-volumes:
-  portainer_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data
+      - ./data:/data
+      # - /run/docker.sock:/run/docker.sock
+      # - /run/podman/podman.sock:/var/run/docker.sock
+      - /run/user/1000/podman/podman.sock:/var/run/docker.sock
+    userns_mode: "keep-id:uid=1000,gid=1000"
