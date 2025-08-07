@@ -1,0 +1,69 @@
+
+services:
+
+  etcd0:
+    image: ${ETCD_IMAGE_TAG}
+    volumes:
+      - ./certs/:/etc/ssl/certs
+    ports:
+      - "2379:2379"  # HTTP API for client access
+      # - "2380:2380"  # Peer communication
+      # - "4001:4001"  # legacy HTTP API
+    command: >
+      /usr/local/bin/etcd \
+        -name etcd0 \
+        -advertise-client-urls http://etcd0:2379 \
+        -listen-client-urls http://0.0.0.0:2379 \
+        -initial-advertise-peer-urls http://etcd0:2380 \
+        -listen-peer-urls http://0.0.0.0:2380 \
+        -initial-cluster-token etcd-cluster-1 \
+        -initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380 \
+        -initial-cluster-state new
+
+  etcd1:
+    image: ${ETCD_IMAGE_TAG}
+    volumes:
+      - ./certs/:/etc/ssl/certs
+    ports:
+      - "2379:2379"  # HTTP API for client access
+      # - "2380:2380"  # Peer communication
+      # - "4001:4001"  # legacy HTTP API
+    command: >
+      /usr/local/bin/etcd \
+        -name etcd1 \
+        -advertise-client-urls http://etcd1:2379 \
+        -listen-client-urls http://0.0.0.0:2379 \
+        -initial-advertise-peer-urls http://etcd1:2380 \
+        -listen-peer-urls http://0.0.0.0:2380 \
+        -initial-cluster-token etcd-cluster-1 \
+        -initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380 \
+        -initial-cluster-state new
+
+  etcd2:
+    image: ${ETCD_IMAGE_TAG}
+    volumes:
+      - ./certs/:/etc/ssl/certs
+    ports:
+      - "2379:2379"  # HTTP API for client access
+      # - "2380:2380"  # Peer communication
+      # - "4001:4001"  # legacy HTTP API
+    command: >
+      /usr/local/bin/etcd \
+        -name etcd2 \
+        -advertise-client-urls http://etcd2:2379 \
+        -listen-client-urls http://0.0.0.0:2379 \
+        -initial-advertise-peer-urls http://etcd2:2380 \
+        -listen-peer-urls http://0.0.0.0:2380 \
+        -initial-cluster-token etcd-cluster-1 \
+        -initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380 \
+        -initial-cluster-state new
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "60000:8080"
+    volumes:
+      - ./caddy/conf:/etc/caddy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # to access host via host.docker.internal

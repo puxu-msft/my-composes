@@ -1,0 +1,34 @@
+{
+    # debug
+
+    # off to 禁用 admin API
+    # admin off
+
+    # off to 禁止通过 admin API 修改的配置落盘
+    # persist_config off
+
+    # off to 关闭自动获取 HTTPS 证书
+    auto_https off
+}
+
+:8080 {
+    handle / {
+        respond "ok"
+    }
+
+    # 代理并去除路径前缀
+    handle_path /api/* {
+        reverse_proxy {
+            to host.docker.internal:8000
+            # to /etc/caddy/api_upstreams.json
+            lb_policy cookie {
+                fallback least_conn
+            }
+            health_uri /
+        }
+    }
+
+    handle /app* {
+        reverse_proxy host.docker.internal:8010
+    }
+}

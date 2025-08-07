@@ -1,0 +1,40 @@
+services:
+
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      # PGDATA: /var/lib/postgresql/data/pgdata  # default
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    volumes:
+      # or set shared memory limit when deploy via swarm stack
+      # - type: tmpfs
+      #   target: /dev/shm
+      #   tmpfs:
+      #     size: 134217728 # 128*2^20 bytes = 128Mb
+
+      # :z : `chcon -Rt svirt_sandbox_file_t /var/db`
+      - /cvol/pg17:/var/lib/postgresql/data:z
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      # PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      # PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - 15432:8080
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    # depends_on:
+    #   - postgres
