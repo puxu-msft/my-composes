@@ -1,0 +1,16 @@
+name: mnemis_uptime_kuma
+
+services:
+  uptime_kuma:
+    image: louislam/uptime-kuma:latest
+    restart: unless-stopped
+    volumes:
+      - kuma_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${UPTIME_KUMA_PORT:-8020}:3001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # to access host via host.docker.internal
+
+volumes:
+  kuma_data:

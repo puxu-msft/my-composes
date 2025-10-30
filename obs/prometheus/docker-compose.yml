@@ -1,0 +1,32 @@
+name: prometheus
+
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+    ports:
+      - ${PROMETHEUS_PORT:-9090}:9090
+    volumes:
+      - "./config:/etc/prometheus:ro"
+      - "prometheus-data:/prometheus"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # to access host via host.docker.internal
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - ${GRAFANA_PORT:-3000}:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+# networks:
+#   node_exporter_network:
+#     external: true
+#     name: prometheus_node_exporter_default

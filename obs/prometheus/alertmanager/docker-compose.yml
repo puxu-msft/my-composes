@@ -1,0 +1,21 @@
+name: prometheus_alertmanager
+
+services:
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    environment:
+      - TZ=UTC
+    ports:
+      - ${ALERTMANAGER_PORT:-9093}:9093
+    volumes:
+      - "./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro"
+      - "./templates:/etc/alertmanager/templates:ro"
+      - "alertmanager_data:/alertmanager"
+
+volumes:
+  alertmanager_data:

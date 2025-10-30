@@ -1,0 +1,16 @@
+name: grafana
+
+services:
+
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    restart: unless-stopped
+    ports:
+      - '${GRAFANA_PORT:-3000}:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    # user: "1000:1000"
+    userns_mode: "keep-id:uid=1000,gid=1000"
+
+volumes:
+  grafana-storage: {}

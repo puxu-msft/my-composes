@@ -1,0 +1,12 @@
+name: gotify
+
+services:
+  gotify:
+    image: gotify/server:2.6
+    ports:
+      - "${GOTIFY_HTTP_PORT:-8001}:80"
+    volumes:
+      - gotify_data:/app/data
+
+volumes:
+  gotify_data:

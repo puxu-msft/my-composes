@@ -1,0 +1,15 @@
+name: azemulator_storage
+
+services:
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - 10000:10000  # Blob service
+      - 10001:10001  # Queue service
+      - 10002:10002  # Table service
+    environment:
+      # default is devstoreaccount1:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
+      - AZURITE_ACCOUNTS=myaccount:mykey

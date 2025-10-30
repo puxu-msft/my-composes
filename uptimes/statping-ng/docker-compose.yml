@@ -1,0 +1,44 @@
+name: statping-ng
+
+services:
+
+  statup:
+    image: adamboutcher/statping-ng:latest
+    restart: unless-stopped
+    ports:
+      - "${STATPING_PORT:-8080}:8080"
+    environment:
+      - TZ=Asia/Shanghai
+      - VIRTUAL_HOST=0.0.0.0
+      - VIRTUAL_PORT=8080
+      - DB_CONN=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_DATABASE=statup
+      - NAME=StatPing-NG
+      - DESCRIPTION=
+    volumes:
+      - ./config.yml:/app/config.yml:ro
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17.5
+    restart: unless-stopped
+    # ports:
+    #   - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=statup
+      - PGDATA=/var/lib/postgresql/17/docker
+    # user: "1000:1000"
+    shm_size: 128mb
+    volumes:
+      - pgdata17:/var/lib/postgresql/17/docker
+    userns_mode: "keep-id:uid=1000,gid=1000"
+
+volumes:
+  pgdata17:
